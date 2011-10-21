@@ -13,17 +13,23 @@ class Application(object):
     def __call__(self, environ, start_response):
         """entry point
         """
-        http_method = environ.get('HTTP_METHOD')
+        http_method = environ.get('REQUEST_METHOD')
         path = environ.get('PATH_INFO')
         params = cgi.parse_qs(environ.get('QUERY_STRING', ''))
         self.dispatch(path, http_method, params, environ, start_response)
 
-    def dispatch(path, http_method, params, environ, start_response):
+    def dispatch(self, path, http_method, params, environ, start_response):
         if http_method != 'GET':
+            return self.badrequest(start_response)
+        if path != '/':
             return self.badrequest(start_response)
         username = params.get('username') and params['username'][0]
         password = params.get('password') and params['password'][0]
         dispnum = params.get('dispnum') and params['dispnum'][0]
+        try:
+            dispnum = int(dispnum)
+        except ValueError:
+            return self.badrequest(start_response)
         pid = self.launch(username, password, dispnum)
         return self.ok(pid, start_response)
 
@@ -49,7 +55,7 @@ class Application(object):
         start_response('400 BadRequest', [
             ('Content-Type', 'application/json')
         ])
-        return '{"status": ""}'
+        return '{"status": "NG"}'
 
 
 

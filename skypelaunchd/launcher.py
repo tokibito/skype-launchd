@@ -30,11 +30,11 @@ class Launcher(object):
     def launch_skype(self, username, password, dispnum):
         """skypeを起動する
         """
-        logging.info('launch skype username=%s, dispnum=%d' % (
+        logging.info('launch skype username=%s, dispnum=%s' % (
             username, dispnum))
         return_code = subprocess.call(
-            [self.get_script_path(), username, password, dispnum])
-        self.launched(username, password, dispnum, return_code)
+            [self.get_script_path(), username, password, str(dispnum)])
+        self.launched(username, dispnum, return_code)
         return return_code
 
     def launched(self, username, dispnum, return_code):
