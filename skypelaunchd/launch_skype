@@ -1,0 +1,19 @@
+#!/bin/bash
+
+USERNAME=$1
+PASSWORD=$2
+DAEMON_USER=skype
+PROGNAME=`basename $0`
+PIDFILE=/var/run/skype/$USERNAME.pid
+XSERVERNUM=$3
+XAUTHFILE=/var/run/skype/Xauthority
+LOGFILE=/var/log/skype/error.log
+DBPATH=/srv/skype/conf
+XAUTHPROTO=.
+SKYPE=/usr/bin/skype
+
+
+sudo -u "$DAEMON_USER" env XAUTHORITY=$XAUTHFILE sh -c "xauth add \":$XSERVERNUM\" \"$XAUTHPROTO\" \"$MCOOKIE\" >> \"$LOGFILE\" 2>&1" && \
+sudo -u "$DAEMON_USER" env XAUTHORITY=$XAUTHFILE sh -c "Xvfb :$XSERVERNUM -screen 0 800x600x8 -nolisten tcp >> \"$LOGFILE\" 2>&1 & echo \$!" >"$PIDFILE" &&
+sleep 3 && \
+(sudo -u "$DAEMON_USER" env DISPLAY=:$XSERVERNUM XAUTHORITY=$XAUTHFILE SKYPE="$SKYPE" sh -c "echo \"$USERNAME $PASSWORD\" | nohup \"$SKYPE\" --dbpath=\"$DBPATH\" --pipelogin &") >> "$LOGFILE" 2>&1
