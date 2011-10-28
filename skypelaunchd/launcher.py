@@ -1,5 +1,6 @@
 # coding: utf-8
 import os
+import signal
 import logging
 import subprocess
 
@@ -43,3 +44,8 @@ class Launcher(object):
         for notifier in self.notifiers:
             notifier(username, dispnum, return_code,
                 self.get_pid_file_path(username))
+
+    def kill_process(self, pid):
+        """終了
+        """
+        os.kill(pid, signal.SIGQUIT)
