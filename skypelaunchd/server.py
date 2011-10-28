@@ -75,6 +75,8 @@ class Application(object):
         username = post_data.getvalue('username')
         password = post_data.getvalue('password')
         dispnum = post_data.getvalue('dispnum')
+        if not dispnum:
+            return self.badrequest(start_response)
         try:
             dispnum = int(dispnum)
         except ValueError:
